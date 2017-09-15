@@ -2,6 +2,8 @@ import praw
 import pdb
 import re
 import os
+from lxml import html
+import requests
 
 reddit = praw.Reddit('bot1')
 
@@ -15,6 +17,11 @@ else:
        posts_replied_to = f.read()
        posts_replied_to = posts_replied_to.split("\n")
        posts_replied_to = list(filter(None, posts_replied_to))
+
+#  TODO Will get HTML from a webpage.  will update later to get any webpage
+page = requests.get('www.imdb.com')
+tree = html.fromstring(page.content)
+
 
 if not os.path.isfile("storage\comments_replied_to.txt"):
     comments_replied_to = []
@@ -35,6 +42,7 @@ for submission in subreddit.hot(limit=5):
             comments_replied_to.append(top_level_comment.id)
     print(submission.title)
     print(submission.selftext)
+    print(submission.author)
     print(submission.score)
     print("---------------------------------------\n")
 
