@@ -19,8 +19,8 @@ else:
        posts_replied_to = list(filter(None, posts_replied_to))
 
 #  TODO Will get HTML from a webpage.  will update later to get any webpage
-page = requests.get('www.imdb.com')
-tree = html.fromstring(page.content)
+#  page = requests.get('www.imdb.com')
+#  tree = html.fromstring(page.content)
 
 
 if not os.path.isfile("storage\comments_replied_to.txt"):
