@@ -1,4 +1,4 @@
-from utils import get_comments_array, get_posts_array, store_posts, store_comments, parse_movie_title, imdb_reply_format
+from utils import get_comments_array, get_posts_array, store_posts, store_comments, parse_movie_title, imdb_reply_format, imdb_search_parser, imdb_does_movie_exist
 import utils
 import praw
 import pdb
@@ -12,6 +12,7 @@ def format_response_test(subreddit, num):
     posts_replied_to = get_posts_array()
     comments_replied_to = get_comments_array()
 
+    print("Formatted Post Response Test")
     for submission in subreddit.hot(limit=num):
         if submission.id not in posts_replied_to:
             if re.search("format test", submission.selftext, re.IGNORECASE):
@@ -38,6 +39,7 @@ def response_test(subreddit, num):
     posts_replied_to = get_posts_array()
     comments_replied_to = get_comments_array()
 
+    print("Generic Post Response Test")
     for submission in subreddit.hot(limit=num):
         if submission.id not in posts_replied_to:
             if re.search("test", submission.selftext, re.IGNORECASE):
@@ -67,18 +69,34 @@ def movie_response_test(subreddit, num):
     posts_replied_to = get_posts_array()
     comments_replied_to = get_comments_array()
 
+    print("Movie Title Post Response Test")
     for submission in subreddit.hot(limit=num):
         if submission.id not in posts_replied_to:
             if re.search("{", submission.selftext, re.IGNORECASE):
                 title = parse_movie_title(submission.selftext)  #  the title of the movie
-                submission.reply(imdb_reply_format(title))      #  formats the response
-                posts_replied_to.append(submission.id)
-                num_replied_to += 1
+                try:
+                    submission.reply(imdb_reply_format(title))      #  formats the response
+                    comments_replied_to.append(top_level_comment.id)
+                    num_replied_to += 1
+                except IndexError:
+                    print("Something Fucked Up")
+        print("Movie Title Comment Response Test")
+        for top_level_comment in submission.comments:
+            if re.search("{", top_level_comment.body, re.IGNORECASE) and top_level_comment.id not in comments_replied_to:
+                title = parse_movie_title(top_level_comment.body)  #  the title of the movie
+                if imdb_does_movie_exist(title):
+                    try:
+                        top_level_comment.reply(imdb_reply_format(title))      #  formats the response
+                        comments_replied_to.append(top_level_comment.id)
+                        num_replied_to += 1
+                    except IndexError:  # Not sure why, but sometimes this will happen
+                        print("Something Fucked Up")
         print(submission.title)
         print(submission.selftext)
         print(submission.author)
         print(submission.score)
         print("---------------------------------------\n")
+
     print("Test replied to: ", num_replied_to, "\n")
     store_posts(posts_replied_to)
     store_comments(comments_replied_to)

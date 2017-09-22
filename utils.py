@@ -51,9 +51,9 @@ def imdb_search_parser(movie_name):
 # takes a string of text from a post or comment, then parses the movie title from it
 # the movie title will be in the format: {title}
 def parse_movie_title(text):
-    title = text[text.find("{")+1: ]
-    title = title[ :title.find("}")]
-    return title
+    movie_title = text[text.find("{")+1: ]
+    movie_title = movie_title[ :movie_title.find("}")]
+    return movie_title
 
 # String -> String
 # takes a string of the title of a movie, then formats a reply to it's imdb page
@@ -79,3 +79,12 @@ def imdb_url_finder(search_url):
     url = "http://www.imdb.com"
     url += tag['href']
     return url
+
+# String -> Boolean
+# takes in a string for a movie title, then returns whether or not it exists
+def imdb_does_movie_exist(movie_title):
+    search_url = imdb_search_parser(movie_title)
+    page = requests.get(search_url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    result = soup.find('div', class_='findNoResults')
+    return True
