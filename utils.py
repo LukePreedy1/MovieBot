@@ -2,12 +2,13 @@ import praw
 import pdb
 import re
 import os
+from typing import List
 from lxml import html
 import requests
 from bs4 import BeautifulSoup
 
 # takes a string (submission selftext) returns an array of strings, titles to search for
-def get_titles_array_from_submission(text):
+def get_titles_array_from_submission(text: str) -> List[str]:
     titles = []
     index = 0
     while 1 :
@@ -22,9 +23,9 @@ def get_titles_array_from_submission(text):
         except IndexError:
             print("Something Fucked up\n")
 
-# () -> String[]
+
 # returns an array of each string in posts_replied_to.txt, which is all the post id's previously replied to
-def get_posts_array():
+def get_posts_array() -> List[str]:
     if not os.path.isfile("storage\posts_replied_to.txt"):
         posts_replied_to = []
     else:
@@ -34,9 +35,9 @@ def get_posts_array():
            posts_replied_to = list(filter(None, posts_replied_to))
     return posts_replied_to
 
-# () -> String[]
+
 # returns an array of each string in comments_replied_to.txt, which is all the comment id's previously replied to
-def get_comments_array():
+def get_comments_array() -> List[str]:
     if not os.path.isfile("storage\comments_replied_to.txt"):
         comments_replied_to = []
     else:
@@ -46,24 +47,23 @@ def get_comments_array():
             comments_replied_to = list(filter(None, comments_replied_to))
     return comments_replied_to
 
-# String[] -> void
+
 # takes an array of strings of post id, wirtes them to the posts_replied_to.txt
-def store_posts(posts_replied_to):
+def store_posts(posts_replied_to: List[str]) -> None:
     with open("storage\posts_replied_to.txt", "w") as f:
         for post_id in posts_replied_to:
             f.write(post_id + "\n")
 
-# String[] -> void
+
 # takes an array of strings of comments id, writes them to the comments_replied_to.txt
-def store_comments(comments_replied_to):
+def store_comments(comments_replied_to: List[str]) -> None:
     with open("storage\comments_replied_to.txt", "w") as f:
         for comment_id in comments_replied_to:
             f.write(comment_id + "\n")
 
 
-# String -> String
 # takes in the name of a movie, returns the imdb search address for it
-def imdb_search_parser(movie_name):
+def imdb_search_parser(movie_name: str) -> str:
     thing = movie_name.lower()
     thing = thing.replace(" ", "+")
     formatted = "http://www.imdb.com/find?ref_=nv_sr_fn&q="
@@ -71,29 +71,24 @@ def imdb_search_parser(movie_name):
     formatted += "&s=all"
     return formatted
 
-# String -> String
 # takes a string of text from a post or comment, then parses the movie title from it
 # the movie title will be in the format: {title}
-def parse_movie_title(text):
+def parse_movie_title(text: str) -> str:
     movie_title = text[text.find("{")+1: ]
     movie_title = movie_title[ :movie_title.find("}")]
     return movie_title
 
-# String -> String
 # takes a string of the title of a movie, then formats a reply to it's imdb page
-def imdb_reply_format(title):
+def imdb_reply_format(title: str) -> str:
     url = imdb_url_finder(imdb_search_parser(title))
     #name = imdb_url_name_getter(url) TODO make this work
-    response = "["
-    response += title
-    response += "]("
-    response += url
-    response += ")"
+    response = "[{0}]({1})".format(title, url)
+
     return response
 
-# String -> String
+
 # takes in a string of the url of the search page of the movie, then returns the imdb page of the movie
-def imdb_url_finder(search_url):
+def imdb_url_finder(search_url: str) -> str:
     page = requests.get(search_url)
 
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -105,9 +100,9 @@ def imdb_url_finder(search_url):
     url += tag['href']
     return url
 
-# String -> String
+
 # takes in a string of the url of the page of the movie, then returns the name of the movie that the page is of
-def imdb_url_name_getter(page_url):
+def imdb_url_name_getter(page_url: str) -> str:
     page = requests.get(page_url)
 
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -118,9 +113,9 @@ def imdb_url_name_getter(page_url):
     print(title, "\n")
     return title
 
-# String -> Boolean
+
 # takes in a string for a movie title, then returns whether or not it exists
-def imdb_does_movie_exist(movie_title):
+def imdb_does_movie_exist(movie_title: str) -> bool:
     search_url = imdb_search_parser(movie_title)
     page = requests.get(search_url)
     soup = BeautifulSoup(page.content, 'html.parser')

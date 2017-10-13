@@ -33,6 +33,9 @@ def format_response_test(subreddit, num):
 
     return
 
+# VOID
+# replies to posts and comments in the given subreddit, for the top INT num posts
+# replies to generic test, will likely remove when in production
 def response_test(subreddit, num):
     num_replied_to = 0
 
@@ -62,7 +65,9 @@ def response_test(subreddit, num):
 
     return
 
-
+# VOID
+# the real meat of the project.  Will resopnd to a post or comment
+# with the imdb link for the movie that is posted in format {name}
 def movie_response_test(subreddit, num):
     num_posts_replied_to = 0
     num_comments_replied_to = 0
