@@ -13,6 +13,6 @@ reddit = praw.Reddit('bot1')
 #TODO change this when the bot is complete
 subreddit = reddit.subreddit('moviebottestingarena')
 
-format_response_test(subreddit, 5)
-response_test(subreddit, 5)
+#format_response_test(subreddit, 5)
+#response_test(subreddit, 5)
 movie_response_test(subreddit, 5)
