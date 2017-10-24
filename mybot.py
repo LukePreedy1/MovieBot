@@ -4,7 +4,7 @@ import re
 import os
 from lxml import html
 import utils
-from responses import format_response_test, response_test, movie_response_test
+from responses import *
 import requests
 from bs4 import BeautifulSoup
 

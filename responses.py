@@ -1,4 +1,4 @@
-from utils import get_comments_array, get_posts_array, store_posts, store_comments, parse_movie_title, imdb_reply_format, imdb_search_parser, imdb_does_movie_exist, get_titles_array_from_submission, imdb_url_finder, imdb_url_name_getter
+from utils import *
 import utils
 import praw
 import pdb
