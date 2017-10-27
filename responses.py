@@ -1,6 +1,7 @@
 from utils import *
 import utils
 import praw
+from praw.models import *
 import pdb
 import re
 import os
@@ -86,14 +87,19 @@ def movie_response_test(subreddit, num):
                         posts_replied_to.append(submission.id)
                         num_posts_replied_to += 1
                         for title in titles:
-                            response += imdb_reply_format(title)
-                            response += "  \n"
-                        submission.reply(response)
+                            if imdb_does_movie_exist:
+                                response += imdb_reply_format(title)
+                                response += "  \n"
+                        # Will only actually respond if there is something to respond to
+                        if len(response) > 0 :
+                            submission.reply(response)
                 except IndexError:
                     print("something fucked up\n")
         print("Movie Title Comment Response Test")
         for top_level_comment in submission.comments:
-            if re.search("{", top_level_comment.body, re.IGNORECASE) and top_level_comment.id not in comments_replied_to:
+            if isinstance(top_level_comment, MoreComments) :
+                print("skipping this one\n")
+            elif re.search("{", top_level_comment.body, re.IGNORECASE) and top_level_comment.id not in comments_replied_to:
                 titles = get_titles_array_from_submission(top_level_comment.body)
                 try:
                     response = ""
@@ -101,11 +107,11 @@ def movie_response_test(subreddit, num):
                         num_comments_replied_to += 1    # add 1 because this comment is being replied to
                         comments_replied_to.append(top_level_comment.id)
                         for title in titles:
-                            response += imdb_reply_format(title)
-                            response += "  \n"
-                            #url = imdb_url_finder(imdb_search_parser(title))
-                            #print(imdb_url_name_getter(url))
-                        top_level_comment.reply(response)
+                            if imdb_does_movie_exist:
+                                response += imdb_reply_format(title)
+                                response += "  \n"
+                        if len(response) > 0:
+                            top_level_comment.reply(response)
                 except IndexError:
                     print("still don't know why this is happening, but it still works, so I'm ok with this\n")
         print(submission.title)

@@ -81,8 +81,11 @@ def parse_movie_title(text: str) -> str:
 # takes a string of the title of a movie, then formats a reply to it's imdb page
 def imdb_reply_format(title: str) -> str:
     url = imdb_url_finder(imdb_search_parser(title))
-    #name = imdb_url_name_getter(url) TODO make this work
-    response = "[{0}]({1})".format(title, url)
+
+    score = imdb_url_score_getter(url)
+    response= ""
+    if score != -1:
+        response += "[{0}]({1}) has an imdb score of {2}".format(title, url, score)
 
     return response
 
@@ -112,6 +115,25 @@ def imdb_url_name_getter(page_url: str) -> str:
     title = results[0].text
     print(title, "\n")
     return title
+
+
+# takes in a string of the url of the page of a movie, then returns the score that it received as a float
+# TODO fix this, probably
+def imdb_url_score_getter(page_url: str) -> float:
+    try:
+        page = requests.get(page_url)
+
+        soup = BeautifulSoup(page.content, 'html.parser')
+        result = soup.find('div', class_='ratingValue')
+
+        score = result.strong.span.text
+
+        return float(score)   # converts the score into a float
+
+    except AttributeError:
+        print("Attribute error.  Not sure why this is happening, will need to troubleshoot from here\n")
+        return float(-1)
+
 
 
 # takes in a string for a movie title, then returns whether or not it exists
