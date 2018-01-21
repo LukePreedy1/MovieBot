@@ -37,7 +37,7 @@ def respond_to_comments(submission, comments_replied_to):
     coms = []
     for top_level_comment in submission.comments:
         if isinstance(top_level_comment, MoreComments) :
-            print("skipping this one\n")
+            print("skipping this one, will add functionality later\n")
         elif re.search("{", top_level_comment.body, re.IGNORECASE) and top_level_comment.id not in comments_replied_to:
             titles = get_titles_array_from_submission(top_level_comment.body)
             response = ""
