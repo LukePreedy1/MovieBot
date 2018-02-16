@@ -7,6 +7,7 @@ from lxml import html
 from responses import *
 import requests
 from bs4 import BeautifulSoup
+from database_control import *
 
 reddit = praw.Reddit('bot1')
 
@@ -14,8 +15,6 @@ reddit = praw.Reddit('bot1')
 subreddit = reddit.subreddit('moviebottestingarena')
 
 #TODO improvement ideas:
-#  to prevent linking to shitty parody names, check the scores of all
-#  results, and return the highest scoring result.
 #  Also, maybe change to movies are in {}, shows [], games <>, etc.
 #  Could potentially make this generic, work for other formats too,
 #  such as discord, but that will be much further down the line

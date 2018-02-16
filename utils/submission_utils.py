@@ -9,11 +9,13 @@ from typing import List
 from lxml import html
 import requests
 from bs4 import BeautifulSoup
+import mysql.connector
 
 # Utility functions for parsing submissions and comments
 
 # takes a string (submission selftext) returns an array of strings, titles to search for
 def get_titles_array_from_submission(text: str) -> List[str]:
+    cnx = mysql.connector.connect(user='LukePreedy', password='Yourface1234', host='127.0.0.1', database='moviebot_thing')
     titles = []
     index = 0
     while 1 :

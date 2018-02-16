@@ -8,6 +8,7 @@ from utils.submission_utils import *
 import pdb
 import re
 import os
+import mysql.connector
 
 # responds to a post, then returns a boolean for if a response was made
 def respond_to_post(submission):

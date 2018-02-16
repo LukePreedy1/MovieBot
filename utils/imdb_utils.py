@@ -8,6 +8,8 @@ from utils.submission_utils import reply_format_movie_not_exist
 from utils.storage_utils import *
 import requests
 from bs4 import BeautifulSoup
+import mysql.connector
+from database_control.database_utils import *
 
 # Utility functions that are only used for working with IMDB
 
@@ -22,8 +24,10 @@ def imdb_reply_format(title: str) -> str:
     score = imdb_url_score_getter(url)
     response= ""
     true_title = imdb_url_name_getter(url)
+    update_movie_in_database(url)
     if score != -1:
-        response += "[{0}]({1}) has an imdb score of {2}".format(true_title, url, score)
+        response += "[{0}]({1}) has an imdb score of {2}\n\n".format(true_title, url, score)
+
     else:                                           # if the movie has no score,
         response += "[{0}]({1})".format(true_title,url)  # I assume that it just hasn't come out yet,
                                                     # and so will just give the name and link, no score
@@ -72,6 +76,13 @@ def imdb_url_name_getter(page_url: str) -> str:
     title = title[:len(title)-1]
     return title
 
+# Given the "true title" of the movie, gets the title out of it
+def imdb_title_year_getter(title: str) -> int:
+    try:
+        year = int(title[len(title) - 5 : len(title) - 1])
+        return year
+    except AttributeError:
+        return -1
 
 # takes in a string of the url of the search page of the movie, then returns the imdb page of the movie
 def imdb_url_finder(search_url: str, name: str) -> str:
@@ -115,6 +126,9 @@ def imdb_url_score_getter(page_url: str) -> float:
 # TODO make this work.  It currently just causes an IndexError if the movie does not exist,
 #      I want to make it actually do what it is supposed to do.  It works for now, just fix later
 def imdb_does_movie_exist(movie_title: str) -> bool:
+    # Connection to the MySQL server
+    cnx = mysql.connector.connect(user='LukePreedy', password='Yourface1234', database='moviebot_thing')
+
     search_url = imdb_search_parser(movie_title)
     page = requests.get(search_url)
     soup = BeautifulSoup(page.content, 'html.parser')
